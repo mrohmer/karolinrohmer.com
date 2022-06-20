@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    @apply relative box-border;
+}
+
+a {
+    @apply hover:text-primary transition-colors fill-zinc-900 dark:fill-white hover:fill-primary;
+}
+
+.break-sm {
+    @apply sm:inline-block;
+}
