@@ -8,7 +8,6 @@ export const Page = component$(() => {
     const attrs = page.attributes;
     const Layout = page.layout;
     const Content = page.content;
-    console.log(attrs);
 
     useHeadMeta({
       title: attrs.title,
