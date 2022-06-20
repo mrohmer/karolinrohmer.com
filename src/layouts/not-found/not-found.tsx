@@ -1,11 +1,8 @@
-import {component$, Host, useScopedStyles$} from '@builder.io/qwik';
-import styles from './not-found.css?inline';
+import {component$, Host} from '@builder.io/qwik';
 import {Main} from '../../components/main/main';
 import {Footer} from '../../components/footer/footer';
 
 const NotFound = component$(() => {
-  useScopedStyles$(styles);
-
   return (
     <Host>
       <Main>
