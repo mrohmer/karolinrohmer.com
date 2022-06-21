@@ -2,7 +2,7 @@
   "name": "karolinrohmer.com",
   "description": "Starter with built-in routing, powered by Qwik City Vite.js tooling. Netlify Edge Functions. Prettier code formatter. Tailwind CSS framework.",
   "scripts": {
-    "build": "npm run typecheck && npm run build.client && npm run build.ssr",
+    "build": "npm run build.client && npm run build.ssr",
     "build.client": "vite build",
     "build.ssr": "vite build --ssr src/entry.netlify.ts",
     "dev": "vite",
@@ -40,6 +40,7 @@
   "license": "",
   "private": true,
   "dependencies": {
-    "classnames": "^2.3.1"
+    "classnames": "^2.3.1",
+    "vite-imagetools": "^4.0.4"
   }
 }

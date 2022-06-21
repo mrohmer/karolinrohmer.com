@@ -11,7 +11,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "incremental": true,
-    "types": ["vite/client"]
+    "types": [
+      "vite/client",
+    ]
   },
   "include": ["src"]
 }

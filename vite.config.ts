@@ -3,11 +3,13 @@ import { qwikVite } from '@builder.io/qwik/optimizer';
 import { qwikCity } from '@builder.io/qwik-city/vite';
 import { resolve } from 'path';
 import netlifyEdge from '@netlify/vite-plugin-netlify-edge';
+import { imagetools } from 'vite-imagetools'
 
 export default defineConfig(() => {
   return {
     
     plugins: [
+      imagetools(),
       qwikCity({
         pagesDir: resolve('src', 'pages'),
         layouts: {
