@@ -9,7 +9,6 @@ export default defineConfig(() => {
   return {
     
     plugins: [
-      imagetools(),
       qwikCity({
         pagesDir: resolve('src', 'pages'),
         layouts: {
@@ -18,6 +17,7 @@ export default defineConfig(() => {
       }),
       qwikVite({ ssr: { outDir: '.netlify/edge-functions/entry.netlify' } }),
       netlifyEdge({ functionName: 'entry.netlify' }),
+      imagetools(),
     ],
   };
 });
