@@ -1,7 +1,5 @@
 import { App } from './components/app/app';
 
-import './global.css?inline';
-
 export const Root = () => {
   return (
     <html lang="en" class="dark:bg-zinc-900 dark:text-white">

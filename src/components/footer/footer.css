@@ -1,5 +1,0 @@
-.docs footer nav a {
-  @apply text-slate-600;
-  @apply no-underline;
-  @apply hover:underline;
-}

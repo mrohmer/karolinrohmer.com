@@ -1,10 +1,7 @@
-import { component$, Host, useScopedStyles$ } from '@builder.io/qwik';
-import styles from './footer.css?inline';
+import {component$, Host} from '@builder.io/qwik';
 
 export const Footer = component$(
   () => {
-    useScopedStyles$(styles);
-
     return (
       <Host class="h-20 left-0 bottom-0 w-screen">
           <div class="bg-zinc-900 dark:bg-white fixed h-20 left-0 bottom-0 w-screen">
