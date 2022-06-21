@@ -1,0 +1,8 @@
+.ddim {
+  @apply h-9 inline-block align-middle ml-2;
+}
+@media (prefers-color-scheme: dark) {
+  .ddim {
+    filter: drop-shadow(0 0 0 #aaa);
+  }
+}

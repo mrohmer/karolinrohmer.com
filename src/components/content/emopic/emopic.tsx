@@ -1,5 +1,6 @@
-import {component$, Host, Slot} from '@builder.io/qwik';
+import {component$, Host, Slot, useScopedStyles$} from '@builder.io/qwik';
 import {BgCanvas} from '../bg-canvas/bg-canvas';
+import styles from './emopic.css?inline';
 
 export const SocialLink = component$(({href}: Record<'href', string> & any) => (
   <a href={href} target="_blank" rel="noopener nofollow" class="block cursor-pointer mx-0.5 p-1">
@@ -7,6 +8,7 @@ export const SocialLink = component$(({href}: Record<'href', string> & any) => (
   </a>
 ))
 export const Emopic = component$(() => {
+  useScopedStyles$(styles);
   return (
     <Host class="min-h-screen flex flex-col items-center bg-gray-200 dark:bg-zinc-900 select-none">
       <BgCanvas/>
@@ -16,7 +18,7 @@ export const Emopic = component$(() => {
             <img src="/images/profile.webp" class="h-full inline-block"/>
           </div>
           <div className="text-center md:text-left">
-            <h1 className="text-3xl font-normal">Karolin Rohmer</h1>
+            <h1 className="text-3xl font-normal tracking-widest uppercase">Karolin Rohmer</h1>
             <h2 className="font-normal">
               <Slot name="slogan"/>
             </h2>
@@ -55,7 +57,7 @@ export const Emopic = component$(() => {
 
         <a href="https://manager.ddim.de/de/member/135040100000032383.php" class="block whitespace-nowrap">
           <div class="inline-block align-middle"><Slot name="memberof"/></div>
-          <img src="/images/ddim.webp" alt="DDIM." class="h-9 inline-block align-middle ml-2"/>
+          <img src="/images/ddim.webp" alt="DDIM." class="ddim"/>
         </a>
       </div>
     </Host>
