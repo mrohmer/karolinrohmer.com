@@ -1,7 +1,5 @@
 import {component$, Host, Slot} from '@builder.io/qwik';
 import {BgCanvas} from '../bg-canvas/bg-canvas';
-import profileImage from '../../../assets/images/profile.png?width=240&format=webp';
-import ddimImage from '../../../assets/images/ddim.png?width=75&format=webp';
 
 export const SocialLink = component$(({href}: Record<'href', string> & any) => (
   <a href={href} target="_blank" rel="noopener nofollow" class="block cursor-pointer mx-0.5 p-1">
@@ -15,7 +13,7 @@ export const Emopic = component$(() => {
       <div class="flex-1 flex items-center z-10">
         <div class="flex flex-col md:flex-row items-center">
           <div className="w-60 h-60 rounded overflow-hidden mb-5 md:mr-6 md:mb-0 text-center">
-            <img src={profileImage} class="h-full inline-block"/>
+            <img src="/images/profile.webp" class="h-full inline-block"/>
           </div>
           <div className="text-center md:text-left">
             <h1 className="text-3xl font-normal">Karolin Rohmer</h1>
@@ -57,7 +55,7 @@ export const Emopic = component$(() => {
 
         <a href="https://manager.ddim.de/de/member/135040100000032383.php" class="block whitespace-nowrap">
           <div class="inline-block align-middle"><Slot name="memberof"/></div>
-          <img src={ddimImage} alt="DDIM." class="h-9 inline-block align-middle ml-2"/>
+          <img src="/images/ddim.webp" alt="DDIM." class="h-9 inline-block align-middle ml-2"/>
         </a>
       </div>
     </Host>

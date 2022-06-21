@@ -3,11 +3,9 @@ import { qwikVite } from '@builder.io/qwik/optimizer';
 import { qwikCity } from '@builder.io/qwik-city/vite';
 import { resolve } from 'path';
 import netlifyEdge from '@netlify/vite-plugin-netlify-edge';
-import { imagetools } from 'vite-imagetools'
 
 export default defineConfig(() => {
   return {
-    
     plugins: [
       qwikCity({
         pagesDir: resolve('src', 'pages'),
@@ -16,8 +14,9 @@ export default defineConfig(() => {
         },
       }),
       qwikVite({ ssr: { outDir: '.netlify/edge-functions/entry.netlify' } }),
-      netlifyEdge({ functionName: 'entry.netlify' }),
-      imagetools(),
+      netlifyEdge({
+        functionName: 'entry.netlify',
+      }),
     ],
   };
 });

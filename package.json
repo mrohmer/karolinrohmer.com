@@ -40,7 +40,6 @@
   "license": "",
   "private": true,
   "dependencies": {
-    "classnames": "^2.3.1",
-    "vite-imagetools": "^4.0.4"
+    "classnames": "^2.3.1"
   }
 }
