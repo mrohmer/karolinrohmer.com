@@ -36,8 +36,6 @@ interface PrintableTriangle {
 export class Canvas {
   private context: CanvasRenderingContext2D;
   private radius = 0;
-  private redrawTimeout = 0;
-  private startHeight = 0;
   private running = false;
 
   private startTrianglePositions?: TrianglePosition[];
@@ -154,16 +152,16 @@ export class Canvas {
   }
 
   private getTrianglesPositions(): TrianglePosition[] {
-    this.startHeight = this.random(150, 75);
-    const startY = this.random((window.innerHeight - 2 * this.startHeight) * 0.7, 0);
+    const startHeight = this.random(0.1, 0.05);
+    const startY = this.random(0.75, 0.25);
     let nextPoints = [
       {
         x: 0,
-        y: startY - this.startHeight / 2
+        y: startY - startHeight / 2
       },
       {
         x: 0,
-        y: startY + this.startHeight / 2
+        y: startY + startHeight / 2
       }
     ];
 
@@ -174,12 +172,13 @@ export class Canvas {
       const isFirst = triangles.length === 0;
       const isLast = triangles.length === amount - 2;
 
-      const toRightBorder = window.innerWidth - nextPoints[1].x;
+      const toRightBorder = 1 - nextPoints[1].x;
 
       const points = this.getNextTrianglePosition(
+        startHeight,
         nextPoints[0],
         nextPoints[1],
-        isLast ? toRightBorder : (isFirst ? toRightBorder / (amount * 2) : -this.startHeight),
+        isLast ? toRightBorder : (isFirst ? toRightBorder / (amount * 2) : -startHeight),
         toRightBorder
       );
 
@@ -191,10 +190,10 @@ export class Canvas {
     return triangles;
   }
 
-  private getNextTrianglePosition(point1: Point, point2: Point, minWidth: number, maxWidth: number): TrianglePosition {
-    const width = this.padNumber(this.random(2, -0.25) * this.startHeight, minWidth, maxWidth);
+  private getNextTrianglePosition(startHeight: number, point1: Point, point2: Point, minWidth: number, maxWidth: number): TrianglePosition {
+    const width = this.padNumber(this.random(2, -0.25) * startHeight, minWidth, maxWidth);
     const x = point2.x + width;
-    const y = this.getNewY(point2.y);
+    const y = this.getNewY(startHeight, point2.y);
 
     return [point1, point2, {x, y}];
   }
@@ -211,10 +210,12 @@ export class Canvas {
   }
 
   private drawTriangle({points, color}: PrintableTriangle) {
+    const {width, height} = this.canvas.getBoundingClientRect();
+
     this.context.beginPath();
-    this.context.moveTo(points[0].x, points[0].y);
-    this.context.lineTo(points[1].x, points[1].y);
-    this.context.lineTo(points[2].x, points[2].y);
+    this.context.moveTo(points[0].x * width, points[0].y * height);
+    this.context.lineTo(points[1].x * width, points[1].y * height);
+    this.context.lineTo(points[2].x * width, points[2].y * height);
 
     this.context.closePath();
 
@@ -222,9 +223,9 @@ export class Canvas {
     this.context.fill();
   }
 
-  private getNewY(y: number): number {
-    const temp = y + this.random(1.0, -1.3) * this.startHeight;
-    return (temp > window.innerHeight - this.startHeight || temp < this.startHeight) ? this.getNewY(y) : temp
+  private getNewY(startHeight: number, y: number): number {
+    const temp = y + this.random(1.0, -1.3) * startHeight;
+    return (temp > 1 - startHeight || temp < startHeight) ? this.getNewY(startHeight, y) : temp
   }
 
   private random(max: number, min: number): number {
