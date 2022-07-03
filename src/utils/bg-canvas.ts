@@ -27,6 +27,8 @@ export class Canvas {
   private readonly durationPosition = 40000;
   private readonly durationColor = this.durationPosition / 50;
 
+  private amount = 20;
+
   constructor(private canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.context = canvas.getContext("2d")!;
@@ -44,6 +46,9 @@ export class Canvas {
     this.context.globalAlpha = 0.6;
 
     this.radius -= Math.PI * Canvas.random(0, 5);
+
+    const {width} = this.canvas.getBoundingClientRect()
+    this.amount = Canvas.padNumber(Math.floor(width / 50 * Canvas.random(0.75, 1.25)), 5, 20);
   }
 
   start() {
@@ -93,8 +98,8 @@ export class Canvas {
   private iterateAnimation() {
     const now = +new Date();
     if (!this.startTrianglePositions || !this.animationStartPosition || this.animationStartPosition + this.durationPosition < now) {
-      this.startTrianglePositions = this.endTrianglePositions ?? this.getTrianglesPositions();
-      this.endTrianglePositions = this.getTrianglesPositions();
+      this.startTrianglePositions = this.endTrianglePositions ?? this.getTrianglesPositions(this.amount);
+      this.endTrianglePositions = this.getTrianglesPositions(this.amount);
       this.animationStartPosition = now;
     }
     if (!this.colors || !this.animationStartColor || this.animationStartColor + this.durationColor < now) {
@@ -132,7 +137,7 @@ export class Canvas {
 
   }
 
-  private getTrianglesPositions(): TrianglePosition[] {
+  private getTrianglesPositions(amount: number): TrianglePosition[] {
     const startHeight = Canvas.random(0.25, 0.1);
     const startY = Canvas.random(0.75, 0.25);
     let nextPoints = [
@@ -147,7 +152,6 @@ export class Canvas {
     ];
 
     const triangles: TrianglePosition[] = [];
-    const amount = 14;
 
     while (triangles.length < amount) {
       const isFirst = triangles.length === 0;
@@ -160,7 +164,7 @@ export class Canvas {
         nextPoints[0],
         nextPoints[1],
         isLast ? toRightBorder : (isFirst ? toRightBorder / (amount * 2) : -startHeight),
-        toRightBorder
+        isLast ? toRightBorder : (toRightBorder / amount) * 3
       );
 
       triangles.push(points)
