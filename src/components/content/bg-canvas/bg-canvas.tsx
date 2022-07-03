@@ -1,18 +1,14 @@
 import {component$, Host, useClientEffect$, useRef, useStore} from '@builder.io/qwik';
-import fastDeepEquals from 'fast-deep-equal';
 
 export const BgCanvas = component$(
   () => {
     const ref = useRef<HTMLCanvasElement>();
     useClientEffect$(() => {
       const canvas = ref.current ? new Canvas(ref.current) : undefined;
-      //const handleClick = () => (canvas?.draw());
-      //window.addEventListener('click', handleClick);
 
       canvas?.start();
       return () => {
         canvas?.stop();
-        // window.removeEventListener('click', handleClick);
       }
     });
     return (<Host class="absolute inset-0 w-full h-full" ref={ref}/>)
@@ -26,11 +22,15 @@ type Point = Record<'x' | 'y', number>;
 
 type TrianglePosition = [Point, Point, Point];
 type TriangleColor = [number, number, number];
-;
 
 interface Triangle {
   points: TrianglePosition;
   color: TriangleColor;
+}
+
+interface PrintableTriangle {
+  points: TrianglePosition;
+  color: string;
 }
 
 export class Canvas {
@@ -46,7 +46,7 @@ export class Canvas {
   private animationStartPosition?: number;
   private animationStartColor?: number;
   private readonly durationPosition = 35000;
-  private readonly durationColor = this.durationPosition / 3;
+  private readonly durationColor = this.durationPosition / 50;
 
   constructor(private canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -136,12 +136,15 @@ export class Canvas {
 
   }
 
-  private getDeltaTriangle(start: Triangle, end: Triangle, positionPercentage: number, colorPercentage: number): Triangle {
+  private getDeltaTriangle(start: Triangle, end: Triangle, positionPercentage: number, colorPercentage: number): PrintableTriangle {
     const points = start.points.map(({x, y}, i) => ({
       x: x + (end.points[i].x - x) * positionPercentage,
       y: y + (end.points[i].y - y) * positionPercentage,
     })) as Triangle['points'];
-    const color = start.color.map((c, i) => this.padNumber(c + (end.color[i] - c) * colorPercentage, 0, 255)) as Triangle['color'];
+
+    const startColor = '#' + start.color.map(c => Math.floor(c).toString(16).padStart(2, '0')).join('');
+    const endColor = '#' + end.color.map(c => Math.floor(c).toString(16).padStart(2, '0')).join('');
+    const color = this.lerpColor(startColor, endColor, colorPercentage);
 
     return {
       points,
@@ -197,7 +200,7 @@ export class Canvas {
   }
 
   private getNextTriangleColor(): TriangleColor {
-    this.radius -= Math.PI * 2.5 / -50;
+    this.radius -= Math.PI * 1.5 / -50;
 
     return [
       Math.cos(this.radius) * 127 + 128,
@@ -207,7 +210,7 @@ export class Canvas {
       ;
   }
 
-  private drawTriangle({points, color}: Triangle) {
+  private drawTriangle({points, color}: PrintableTriangle) {
     this.context.beginPath();
     this.context.moveTo(points[0].x, points[0].y);
     this.context.lineTo(points[1].x, points[1].y);
@@ -215,7 +218,7 @@ export class Canvas {
 
     this.context.closePath();
 
-    this.context.fillStyle = '#' + color.map(c => Math.floor(c).toString(16)).join('');
+    this.context.fillStyle = color;
     this.context.fill();
   }
 
@@ -230,5 +233,17 @@ export class Canvas {
 
   private padNumber(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max);
+  }
+
+  private lerpColor(a: string, b: string, amount: number): string {
+    const ah = parseInt(a.replace(/#/g, ''), 16),
+      ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+      bh = parseInt(b.replace(/#/g, ''), 16),
+      br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+      rr = ar + amount * (br - ar),
+      rg = ag + amount * (bg - ag),
+      rb = ab + amount * (bb - ab);
+
+    return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
   }
 }
