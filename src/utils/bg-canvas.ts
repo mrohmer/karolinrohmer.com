@@ -24,7 +24,7 @@ export class Canvas {
   private colors?: TriangleColor[];
   private animationStartPosition?: number;
   private animationStartColor?: number;
-  private readonly durationPosition = 35000;
+  private readonly durationPosition = 40000;
   private readonly durationColor = this.durationPosition / 50;
 
   constructor(private canvas: HTMLCanvasElement) {
@@ -172,7 +172,7 @@ export class Canvas {
   }
 
   private getNextTrianglePosition(startHeight: number, point1: Point, point2: Point, minWidth: number, maxWidth: number): TrianglePosition {
-    const width = this.padNumber(this.random(2, -0.25) * startHeight, minWidth, maxWidth);
+    const width = this.padNumber(this.random(2, -0.1) * startHeight, minWidth, maxWidth);
     const x = point2.x + width;
     const y = this.getNewY(startHeight, point2.y);
 
