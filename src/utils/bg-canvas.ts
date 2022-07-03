@@ -43,7 +43,7 @@ export class Canvas {
     this.context.scale(pixelRatio, pixelRatio);
     this.context.globalAlpha = 0.6;
 
-    this.radius -= Math.PI * this.random(0, 5);
+    this.radius -= Math.PI * Canvas.random(0, 5);
   }
 
   start() {
@@ -123,7 +123,7 @@ export class Canvas {
 
     const startColor = '#' + start.color.map(c => Math.floor(c).toString(16).padStart(2, '0')).join('');
     const endColor = '#' + end.color.map(c => Math.floor(c).toString(16).padStart(2, '0')).join('');
-    const color = this.lerpColor(startColor, endColor, colorPercentage);
+    const color = Canvas.lerpColor(startColor, endColor, colorPercentage);
 
     return {
       points,
@@ -133,8 +133,8 @@ export class Canvas {
   }
 
   private getTrianglesPositions(): TrianglePosition[] {
-    const startHeight = this.random(0.25, 0.1);
-    const startY = this.random(0.75, 0.25);
+    const startHeight = Canvas.random(0.25, 0.1);
+    const startY = Canvas.random(0.75, 0.25);
     let nextPoints = [
       {
         x: 0,
@@ -172,7 +172,7 @@ export class Canvas {
   }
 
   private getNextTrianglePosition(startHeight: number, point1: Point, point2: Point, minWidth: number, maxWidth: number): TrianglePosition {
-    const width = this.padNumber(this.random(2, -0.1) * startHeight, minWidth, maxWidth);
+    const width = Canvas.padNumber(Canvas.random(2, -0.1) * startHeight, minWidth, maxWidth);
     const x = point2.x + width;
     const y = this.getNewY(startHeight, point2.y);
 
@@ -205,19 +205,19 @@ export class Canvas {
   }
 
   private getNewY(startHeight: number, y: number): number {
-    const temp = y + this.random(1.0, -1.3) * startHeight;
+    const temp = y + Canvas.random(1.0, -1.3) * startHeight;
     return (temp > 1 - startHeight || temp < startHeight) ? this.getNewY(startHeight, y) : temp
   }
 
-  private random(max: number, min: number): number {
+  private static random(max: number, min: number): number {
     return Math.random() * (max - min) + min;
   }
 
-  private padNumber(value: number, min: number, max: number) {
+  private static padNumber(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max);
   }
 
-  private lerpColor(a: string, b: string, amount: number): string {
+  private static lerpColor(a: string, b: string, amount: number): string {
     const ah = parseInt(a.replace(/#/g, ''), 16),
       ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
       bh = parseInt(b.replace(/#/g, ''), 16),
