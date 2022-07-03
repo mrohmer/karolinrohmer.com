@@ -25,7 +25,9 @@ export const BgCanvas = component$(
 type Point = Record<'x' | 'y', number>;
 
 type TrianglePosition = [Point, Point, Point];
-type TriangleColor = [number, number, number];;
+type TriangleColor = [number, number, number];
+;
+
 interface Triangle {
   points: TrianglePosition;
   color: TriangleColor;
@@ -38,10 +40,13 @@ export class Canvas {
   private startHeight = 0;
   private running = false;
 
-  private startTriangles?: Triangle[];
-  private endTriangles?: Triangle[];
-  private animationStart?: number;
-  private readonly duration = 35000;
+  private startTrianglePositions?: TrianglePosition[];
+  private endTrianglePositions?: TrianglePosition[];
+  private colors?: TriangleColor[];
+  private animationStartPosition?: number;
+  private animationStartColor?: number;
+  private readonly durationPosition = 35000;
+  private readonly durationColor = this.durationPosition / 3;
 
   constructor(private canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -68,9 +73,9 @@ export class Canvas {
     }
 
     this.running = true;
-    this.startTriangles = undefined;
-    this.endTriangles = undefined;
-    this.animationStart = undefined;
+    this.startTrianglePositions = undefined;
+    this.endTrianglePositions = undefined;
+    this.animationStartPosition = undefined;
 
     this.draw();
   }
@@ -84,22 +89,20 @@ export class Canvas {
       return;
     }
 
-    const now = +new Date();
-    if (!this.startTriangles || !this.animationStart) {
-      this.startTriangles = this.getTriangles();
-      this.endTriangles = this.getTriangles();
-      this.animationStart = +new Date();
-    } else if (this.animationStart + this.duration < now) {
-      this.startTriangles = this.endTriangles;
-      this.endTriangles = this.getTriangles();
-      this.animationStart = +new Date();
-    }
+    this.iterateAnimation();
 
-    const percentage = (now - this.animationStart) / this.duration;
-    const triangles = this.startTriangles!
-      .filter((_, i) => i < this.endTriangles!.length)
-      .map((triangle, i) => [triangle, this.endTriangles![i]])
-      .map(([start, end]) => this.getDeltaTriangle(start, end, percentage))
+    const positionPercentage = (+new Date() - this.animationStartPosition!) / this.durationPosition;
+    const colorPercentage = (+new Date() - this.animationStartColor!) / this.durationColor;
+    const triangles = this.startTrianglePositions!
+      .filter((_, i) => i < this.endTrianglePositions!.length)
+      .map((triangle, i) => [
+        {points: triangle, color: this.colors![i]},
+        {points: this.endTrianglePositions![i], color: this.colors![i + 1]}
+      ])
+      .map(
+        ([start, end], index) =>
+          this.getDeltaTriangle(start, end, positionPercentage, colorPercentage)
+      )
 
     this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -108,12 +111,37 @@ export class Canvas {
     requestAnimationFrame(() => this.draw());
   }
 
-  private getDeltaTriangle(start: Triangle, end: Triangle, percentage: number): Triangle {
+  private iterateAnimation() {
+    const now = +new Date();
+    if (!this.startTrianglePositions || !this.animationStartPosition || this.animationStartPosition + this.durationPosition < now) {
+      this.startTrianglePositions = this.endTrianglePositions ?? this.getTrianglesPositions();
+      this.endTrianglePositions = this.getTrianglesPositions();
+      this.animationStartPosition = now;
+    }
+    if (!this.colors || !this.animationStartColor || this.animationStartColor + this.durationColor < now) {
+      if (this.colors?.length) {
+        this.colors.shift();
+        this.colors = [
+          ...this.colors,
+          this.getNextTriangleColor(),
+        ];
+      } else {
+        this.colors = [
+          ...this.startTrianglePositions!.map(() => this.getNextTriangleColor()),
+          this.getNextTriangleColor(),
+        ];
+      }
+      this.animationStartColor = now;
+    }
+
+  }
+
+  private getDeltaTriangle(start: Triangle, end: Triangle, positionPercentage: number, colorPercentage: number): Triangle {
     const points = start.points.map(({x, y}, i) => ({
-      x: x + (end.points[i].x - x) * percentage,
-      y: y + (end.points[i].y - y) * percentage,
+      x: x + (end.points[i].x - x) * positionPercentage,
+      y: y + (end.points[i].y - y) * positionPercentage,
     })) as Triangle['points'];
-    const color = start.color.map((c, i) => this.padNumber(c + (end.color[i] - c) * percentage, 0, 255)) as Triangle['color'];
+    const color = start.color.map((c, i) => this.padNumber(c + (end.color[i] - c) * colorPercentage, 0, 255)) as Triangle['color'];
 
     return {
       points,
@@ -122,7 +150,7 @@ export class Canvas {
 
   }
 
-  private getTriangles(): Triangle[] {
+  private getTrianglesPositions(): TrianglePosition[] {
     this.startHeight = this.random(150, 75);
     const startY = this.random((window.innerHeight - 2 * this.startHeight) * 0.7, 0);
     let nextPoints = [
@@ -136,48 +164,47 @@ export class Canvas {
       }
     ];
 
-    const triangles: Triangle[] = [];
+    const triangles: TrianglePosition[] = [];
     const amount = 14;
 
     while (triangles.length < amount) {
-
       const isFirst = triangles.length === 0;
       const isLast = triangles.length === amount - 2;
 
       const toRightBorder = window.innerWidth - nextPoints[1].x;
 
-      const triangle = this.getNextTriangle(
+      const points = this.getNextTrianglePosition(
         nextPoints[0],
         nextPoints[1],
         isLast ? toRightBorder : (isFirst ? toRightBorder / (amount * 2) : -this.startHeight),
         toRightBorder
       );
 
-      triangles.push(triangle);
+      triangles.push(points)
 
-      nextPoints = [triangle.points[1], triangle.points[2]];
+      nextPoints = [points[1], points[2]];
     }
 
     return triangles;
   }
 
-  private getNextTriangle(point1: Point, point2: Point, minWidth: number, maxWidth: number): Triangle {
-    this.radius -= Math.PI * 2.5 / -50;
-
+  private getNextTrianglePosition(point1: Point, point2: Point, minWidth: number, maxWidth: number): TrianglePosition {
     const width = this.padNumber(this.random(2, -0.25) * this.startHeight, minWidth, maxWidth);
     const x = point2.x + width;
     const y = this.getNewY(point2.y);
-    const color = [
-        Math.cos(this.radius) * 127 + 128,
-        Math.cos(this.radius + Math.PI * 2 / 3) * 127 + 128,
-        Math.cos(this.radius + Math.PI * 2 / 3 * 2) * 127 + 128,
-      ] as Triangle['color']
-    ;
 
-    return {
-      points: [point1, point2, {x, y}],
-      color,
-    }
+    return [point1, point2, {x, y}];
+  }
+
+  private getNextTriangleColor(): TriangleColor {
+    this.radius -= Math.PI * 2.5 / -50;
+
+    return [
+      Math.cos(this.radius) * 127 + 128,
+      Math.cos(this.radius + Math.PI * 2 / 3) * 127 + 128,
+      Math.cos(this.radius + Math.PI * 2 / 3 * 2) * 127 + 128,
+    ] as Triangle['color']
+      ;
   }
 
   private drawTriangle({points, color}: Triangle) {
@@ -200,6 +227,7 @@ export class Canvas {
   private random(max: number, min: number): number {
     return Math.random() * (max - min) + min;
   }
+
   private padNumber(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max);
   }
