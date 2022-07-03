@@ -9,13 +9,31 @@ status = 301
 force = true
 
 [[redirects]]
+from = "http://k.rohmer.rocks/*"
+to = "https://karolinrohmer.com/:splat"
+status = 301
+force = true
+
+[[redirects]]
 from = "https://karo.rohmer.rocks/*"
 to = "https://karolinrohmer.com/:splat"
 status = 301
 force = true
 
 [[redirects]]
+from = "http://karo.rohmer.rocks/*"
+to = "https://karolinrohmer.com/:splat"
+status = 301
+force = true
+
+[[redirects]]
 from = "https://karolin.rohmer.rocks/*"
+to = "https://karolinrohmer.com/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "http://karolin.rohmer.rocks/*"
 to = "https://karolinrohmer.com/:splat"
 status = 301
 force = true
