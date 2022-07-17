@@ -33,6 +33,7 @@
   export let lang: string;
 </script>
 
+<svelte:window lang={lang} />
 <svelte:head>
     <meta name="title" content={meta.title} />
     <meta name="description" content={meta.description} />
