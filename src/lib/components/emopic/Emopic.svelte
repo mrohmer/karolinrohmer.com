@@ -77,18 +77,18 @@
 
         {#if links?.ddim || links?.diag}
             <div class="block whitespace-nowrap">
-                <div class="inline-block align-middle">
-                    <slot name="memberof"/>
-                </div>
                 <div class="inline-block align-middle ml-2">
                     {#if links?.ddim}
                         <a href={links?.ddim} target="_blank"
                            rel="noreferrer noopener">
+                            <div class="inline-block align-middle">
+                                <slot name="memberof"/>
+                            </div>
                             <img src="/images/ddim.webp" alt="DDIM." class="logo ddim"/>
                         </a>
                     {/if}
                     {#if links?.ddim && links?.diag}
-                        <span class="inline-block mx-2">&</span>
+                        <span class="inline-block mx-2"></span>
                     {/if}
                     {#if links?.diag}
                         <a href={links?.diag}
