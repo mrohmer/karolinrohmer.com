@@ -18,7 +18,7 @@
 <LanguageSwitch lang="de"/>
 
 <Emopic>
-    <div slot="name">
+    <div slot="slogan">
         <div class="break-sm">Globales Produktmanagement</div>
         <div class="break-sm">auf den Punkt gebracht</div>
     </div>
