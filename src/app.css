@@ -12,6 +12,10 @@ a {
     @apply hover:text-primary transition-colors fill-zinc-900 dark:fill-white hover:fill-primary;
 }
 
+strong {
+    @apply font-bold;
+}
+
 .break-sm {
     @apply sm:inline-block;
 }
